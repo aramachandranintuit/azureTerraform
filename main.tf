@@ -124,4 +124,14 @@ resource "azurerm_virtual_machine" "vm" {
     create_option     = "FromImage"
     managed_disk_type = "Standard_LRS"
   }
+  
+  provisioner "file" {
+    source      = "script.sh"
+    destination = "/tmp/script.sh"
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /tmp/script.sh",
+      "sh /tmp/script.sh ",
+    ]
 }
