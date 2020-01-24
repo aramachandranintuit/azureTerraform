@@ -112,24 +112,16 @@ resource "azurerm_virtual_machine" "vm" {
   vm_size               = "${var.vm_size}"
   network_interface_ids = ["${element(azurerm_network_interface.nic.*.id, count.index)}"]
   count                 = "${var.vm_count_per_subnet}"
-
   storage_image_reference {
-    publisher = "${var.image_publisher}"
-    offer     = "${var.image_offer}"
-    sku       = "${var.image_sku}"
-    version   = "${var.image_version}"
+    publisher = "Canonical"
+    offer     = "UbuntuServer"
+    sku       = "16.04-LTS"
+    version   = "latest"
   }
-
   storage_os_disk {
-    name          = "osdisk${count.index}${random_id.server.hex}"
-    create_option = "FromImage"
+    name              = "myosdisk1"
+    caching           = "ReadWrite"
+    create_option     = "FromImage"
+    managed_disk_type = "Standard_LRS"
   }
-
-  os_profile {
-    computer_name  = "${var.hostname}"
-    admin_username = "${var.admin_username}"
-    admin_password = "${var.admin_password}"
-  }
-
-  os_profile_windows_config {}
 }
