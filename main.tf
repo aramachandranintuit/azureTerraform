@@ -49,7 +49,7 @@ resource "azurerm_subnet" "subnet" {
 resource "azurerm_lb" "lb" {
   resource_group_name = "${azurerm_resource_group.rg.name}"
   name                = "lb${random_id.server.hex}"
-  location            = "${var.location}"
+  location            = "${var.region}"
 
   frontend_ip_configuration { 
     name                 = "LoadBalancerFrontEnd"
@@ -118,7 +118,6 @@ resource "azurerm_virtual_machine" "vm" {
     sku       = "16.04-LTS"
     version   = "latest"
   }
-  }
   storage_os_disk {
     name              = "myosdisk1"
     caching           = "ReadWrite"
@@ -130,9 +129,10 @@ resource "azurerm_virtual_machine" "vm" {
     source      = "script.sh"
     destination = "/tmp/script.sh"
   }
-  provisioner "remote-exec" {
+    provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/script.sh",
       "sh /tmp/script.sh ",
     ]
+}
 }
