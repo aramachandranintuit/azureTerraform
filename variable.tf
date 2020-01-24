@@ -28,7 +28,7 @@ variable "vm_count_per_subnet" {
 	default=2
 }
 
-variable "location" {
+variable "region" {
   description = "The location/region where the virtual network is created. Changing this forces a new resource to be created."
   default     = "southindia"
 }
