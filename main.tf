@@ -118,6 +118,7 @@ resource "azurerm_virtual_machine" "vm" {
     sku       = "16.04-LTS"
     version   = "latest"
   }
+  }
   storage_os_disk {
     name              = "myosdisk1"
     caching           = "ReadWrite"
