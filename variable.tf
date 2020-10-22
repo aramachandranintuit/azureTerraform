@@ -25,12 +25,12 @@ variable "lb_ip_dns_name" {
 
 variable "vm_count_per_subnet" {
 	description = "count per subnet"
-	default=2
+	default=200
 }
 
 variable "region" {
   description = "The location/region where the virtual network is created. Changing this forces a new resource to be created."
-  default     = "southindia"
+  default     = "eastus"
 }
 
 variable "virtual_network_name" {

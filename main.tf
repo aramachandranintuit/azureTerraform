@@ -1,10 +1,18 @@
+provider "azurerm" {
+  version = "=2.3.0"
+  features {}
+subscription_id = "061b9311-9c54-4471-9a59-4909517d6f07"
+client_id       = "150f0756-df47-4f68-a971-1e9303ae2014"
+client_secret   = "5.7iSn2q~~aSWrQf8mDUw_N5Q-PBbH188L"
+tenant_id     = "8bcff170-9979-491e-8683-d8ced0850bad"
+}
 resource "random_id" "server" {
   byte_length = 8
 }
 
 resource "azurerm_resource_group" "rg" {
   name     = "${var.resource_group}-${random_id.server.hex}"
-  location = "${var.region}"
+  location = var.region
 }
 
 resource "azurerm_storage_account" "stor" {
@@ -49,7 +57,7 @@ resource "azurerm_subnet" "subnet" {
 resource "azurerm_lb" "lb" {
   resource_group_name = "${azurerm_resource_group.rg.name}"
   name                = "lb${random_id.server.hex}"
-  location            = "${var.location}"
+  location            = "${var.region}"
 
   frontend_ip_configuration { 
     name                 = "LoadBalancerFrontEnd"
@@ -100,7 +108,6 @@ resource "azurerm_network_interface" "nic" {
     name                                    = "ipconfig${count.index}${random_id.server.hex}"
     subnet_id                               = "${azurerm_subnet.subnet.id}"
     private_ip_address_allocation           = "Dynamic"
-    load_balancer_backend_address_pools_ids = ["${azurerm_lb_backend_address_pool.backend_pool.id}"] 
   }
 }
 
@@ -118,21 +125,18 @@ resource "azurerm_virtual_machine" "vm" {
     sku       = "16.04-LTS"
     version   = "latest"
   }
-  }
   storage_os_disk {
-    name              = "myosdisk1"
+    name              = "myosdisk${count.index}${random_id.server.hex}"
     caching           = "ReadWrite"
     create_option     = "FromImage"
     managed_disk_type = "Standard_LRS"
   }
-  
-  provisioner "file" {
-    source      = "script.sh"
-    destination = "/tmp/script.sh"
+  os_profile {
+    computer_name  = "hostname"
+    admin_username = "testadmin"
+    admin_password = "Password1234!"
   }
-  provisioner "remote-exec" {
-    inline = [
-      "chmod +x /tmp/script.sh",
-      "sh /tmp/script.sh ",
-    ]
+  os_profile_linux_config {
+    disable_password_authentication = false
+  }
 }
